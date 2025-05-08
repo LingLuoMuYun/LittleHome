@@ -1,21 +1,26 @@
 ---
 import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
 const pageTitle = "首页";
 ---
 
 <html lang="zh-cn">
-  <head>
+  <head >
     <meta charset="utf-8" />
     <link rel="icon" type ="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content = {Astro.generator} >
     <title>{pageTitle}</title>
   </head>
+
   <body>
-	<a href="/">首页</a>
-    <a href="/about/">关于</a>
-    <a href="/blog/">博客</a>
+	<Header />
     <h1>{pageTitle}</h1>
 	<h2>新的尝试</h2>
-  </body>
+	<Footer />
+  <script>
+    import "../scripts/menu.js";
+  </script>
+</body>
 </html>
