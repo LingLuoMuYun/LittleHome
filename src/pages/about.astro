@@ -1,4 +1,5 @@
 ---
+import '../styles/global.css';
 const pageTitle = "关于我";
 
 const identity = {
@@ -13,12 +14,24 @@ const skills = ["HTML", "CSS", "JavaScript", "React", "Astro", "Writing Docs"];
 const happy = true;
 const finished = false;
 const goal = 4;
+
+const skillColor = "blue";
 ---
 <html lang="zh-CN">
   <head>
     <meta charset ="utf-8" />
     <meta name="viewport" content="width=device-width" />
     <title>{pageTitle}</title>
+    <style define:vars={{skillColor}}>
+        h1 {
+          color: purple;
+          font-size: 4rem;
+        }
+        .skill {
+        color: var(--skillColor);
+        font-weight: bold;
+        }
+      </style>
   </head>
   <body>
     <a href="/">首页</a>
@@ -39,15 +52,15 @@ const goal = 4;
         <li>我的两个习惯：{identity.hobbies[0]}和{identity.hobbies[1]}</li>
     }
     </ul>
-    <p>我的技能是：</p>
+    <p>我的技能：</p>
     <ul>
-    {skills.map((skill) => <li>{skill}</li>)}
+    {skills.map((skill) => <li class="skill">{skill}</li>)}
     </ul>
     {happy && <p>我非常乐意学习 Astro！</p>}
 
     {finished && <p>我完成了这节教程！</p>}
 
-    {goal === 3 ? <p>我的目标是在三天内完成。</p> : <p>我的目标不是 3 天。</p>}
+    {goal === 4 ? <p>我的目标是在四天内完成。</p> : <p>我的目标不是 4 天。</p>}
 
   </body>
 </html>
