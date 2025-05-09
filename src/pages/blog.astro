@@ -1,28 +1,16 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
 import '../styles/global.css';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
 const pageTitle = "我的博客";
 ---
-<html lang = "zh">
-  <head>
-    <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width" />
-    <title>{pageTitle}</title>
-  </head>
-  <body>
-    <Header/>
 
-    <h1>我的 Astro 学习博客</h1>
-    <p>这是我的 Astro 学习笔记</p>
-    <ul>
-      <li><a href="/posts/post1/">文章 1</a></li>
-      <li><a href="/posts/post2/">文章 2</a></li>
-      <li><a href="/posts/post3/">文章 3</a></li>
-    </ul>
-    <Footer />
-    <script>
-      import "../scripts/menu.js";
-    </script>
-  </body>
-</html>
+
+<BaseLayout pageTitle={pageTitle}>
+  <h1>我的 Astro 学习博客</h1>
+  <p>这是我的 Astro 学习笔记</p>
+  <ul>
+    <li><a href="/posts/post1/">文章 1</a></li>
+    <li><a href="/posts/post2/">文章 2</a></li>
+    <li><a href="/posts/post3/">文章 3</a></li>
+  </ul>
+</BaseLayout>
