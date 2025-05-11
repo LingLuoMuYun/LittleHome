@@ -8,7 +8,6 @@ const pageTitle = "我的博客";
 
 
 <BaseLayout pageTitle={pageTitle}>
-  <h1>我的 Astro 学习博客</h1>
   <p>这是我的 Astro 学习笔记</p>
   <ul>
     {allPosts.map((post: any) => <BlogPost url={post.url} title={post.frontmatter.title} />)}
