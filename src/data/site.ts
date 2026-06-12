@@ -11,7 +11,7 @@ export const site = {
 export const social = {
   github: 'https://github.com/LingLuoMuYun',
   email: 'mailto:MuYunLiQiu@gmail.com',
-  qq: '',
+  qq: '1603728172',
   wechat: 'MuYunLiQiu',
 };
 

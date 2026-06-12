@@ -24,12 +24,16 @@ import { friends } from '../data/friends';
             rel="noopener"
             class="friend-card card"
           >
-            <img
-              src={friend.avatar}
-              alt={friend.name}
-              loading="lazy"
-              class="friend-avatar"
-            />
+            {friend.avatar ? (
+              <img
+                src={friend.avatar}
+                alt={friend.name}
+                loading="lazy"
+                class="friend-avatar"
+              />
+            ) : (
+              <span class="friend-avatar-placeholder">{friend.name[0]}</span>
+            )}
             <div class="friend-info">
               <h3>{friend.name}</h3>
               <p>{friend.description}</p>
@@ -91,6 +95,20 @@ import { friends } from '../data/friends';
     object-fit: cover;
     flex-shrink: 0;
     background: var(--accent-light);
+  }
+
+  .friend-avatar-placeholder {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.15rem;
   }
 
   .friend-info {
