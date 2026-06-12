@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import BackgroundGradient from '../components/BackgroundGradient.astro';
 
 const currentPath = Astro.url.pathname;
 
@@ -17,10 +18,22 @@ const navItems = [
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="个人主页 - 记录思考与生活" />
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏠</text></svg>" />
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- View Transitions -->
+    <meta name="astro-view-transitions-enabled" content="true" />
+    <meta name="astro-view-transitions-fallback" content="animate" />
     <title>LingLuo · 个人主页</title>
   </head>
   <body>
-    <header>
+    <BackgroundGradient />
+
+    <header id="site-header">
       <div class="container">
         <nav>
           <a href="/" class="logo">LL</a>
@@ -33,26 +46,86 @@ const navItems = [
                 {item.label}
               </a>
             ))}
+            <button
+              id="theme-toggle"
+              class="theme-btn"
+              aria-label="切换主题"
+              title="切换亮色/暗色模式"
+            ></button>
           </div>
         </nav>
       </div>
     </header>
+
     <main class="container">
       <slot />
     </main>
+
     <footer>
       <div class="container">
-        <p>&copy; {new Date().getFullYear()} LingLuo</p>
+        <div class="footer-inner">
+          <p>&copy; {new Date().getFullYear()} LingLuo</p>
+          <div class="footer-links">
+            <a href="mailto:lingluo@example.com">Email</a>
+            <span class="dot">·</span>
+            <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </div>
       </div>
     </footer>
+
+    <!-- 主题切换脚本 -->
+    <script>
+      (function () {
+        const KEY = 'lingluo-theme';
+        const STORED = localStorage.getItem(KEY);
+        const PREFERS_DARK = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (STORED === 'dark' || (!STORED && PREFERS_DARK)) {
+          document.documentElement.classList.add('dark');
+        }
+
+        const btn = document.getElementById('theme-toggle');
+        if (!btn) return;
+
+        const html = document.documentElement;
+
+        function updateIcon() {
+          const isDark = html.classList.contains('dark');
+          btn!.innerHTML = isDark
+            ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>'
+            : '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+        }
+        updateIcon();
+
+        btn.addEventListener('click', () => {
+          html.classList.toggle('dark');
+          localStorage.setItem(KEY, html.classList.contains('dark') ? 'dark' : 'light');
+          updateIcon();
+        });
+
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+          if (!localStorage.getItem(KEY)) {
+            html.classList.toggle('dark', e.matches);
+            updateIcon();
+          }
+        });
+      })();
+    </script>
   </body>
 </html>
 
 <style>
+  /* 导航栏毛玻璃 */
   header {
-    padding: 1.5rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0.9rem 0;
+    background: var(--bg-card);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
     border-bottom: 1px solid var(--border);
-    margin-bottom: 3rem;
+    transition: var(--transition-theme);
   }
 
   nav {
@@ -63,20 +136,21 @@ const navItems = [
 
   .logo {
     font-weight: 700;
-    font-size: 1rem;
-    letter-spacing: -0.02em;
-    border-bottom: none;
+    font-size: 1.05rem;
+    letter-spacing: -0.03em;
+    color: var(--text);
   }
 
   .nav-links {
     display: flex;
-    gap: 1.5rem;
+    align-items: center;
+    gap: 1.4rem;
   }
 
   .nav-link {
-    font-size: 0.9rem;
-    border-bottom: none;
+    font-size: 0.88rem;
     color: var(--text-secondary);
+    font-weight: 450;
     transition: color 0.2s;
   }
 
@@ -87,17 +161,65 @@ const navItems = [
 
   .nav-link.active {
     font-weight: 600;
+    color: var(--accent);
+  }
+
+  /* 主题切换按钮 */
+  .theme-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: color 0.2s, background 0.2s;
+    margin-left: 0.3rem;
+  }
+
+  .theme-btn:hover {
+    color: var(--text);
+    background: var(--accent-light);
   }
 
   main {
-    min-height: calc(100vh - 280px);
+    min-height: calc(100vh - 260px);
+    padding-top: 2.5rem;
   }
 
   footer {
-    margin-top: 4rem;
+    margin-top: 5rem;
     padding: 2rem 0;
     border-top: 1px solid var(--border);
-    color: var(--text-secondary);
+    transition: var(--transition-theme);
+  }
+
+  .footer-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .footer-links {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .dot {
+    color: var(--border);
+  }
+
+  .footer-links a {
+    color: var(--text-secondary);
+    transition: color 0.2s;
+  }
+
+  .footer-links a:hover {
+    color: var(--accent);
   }
 </style>

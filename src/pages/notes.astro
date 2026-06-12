@@ -8,7 +8,9 @@ import NoteEditor from '../components/NoteEditor.astro';
     <h1>发帖</h1>
     <p class="subtitle">记录你的想法和灵感。</p>
   </section>
-  <NoteEditor />
+  <div class="card card-body">
+    <NoteEditor />
+  </div>
 </Layout>
 
 <style>
@@ -23,5 +25,9 @@ import NoteEditor from '../components/NoteEditor.astro';
   .subtitle {
     color: var(--text-secondary);
     font-size: 0.95rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
   }
 </style>

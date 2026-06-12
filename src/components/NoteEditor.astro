@@ -1,17 +1,14 @@
 <!-- 快速笔记组件 - 数据存储在 localStorage -->
-<div id="notes-app">
-  <h2>快速笔记</h2>
-  <form id="note-form">
-    <textarea
-      id="note-input"
-      placeholder="写下你的想法..."
-      rows="3"
-      autocomplete="off"
-    ></textarea>
-    <button type="submit">发布</button>
-  </form>
-  <div id="notes-list"></div>
-</div>
+<form id="note-form">
+  <textarea
+    id="note-input"
+    placeholder="写下你的想法..."
+    rows="3"
+    autocomplete="off"
+  ></textarea>
+  <button type="submit" class="btn-primary">发布</button>
+</form>
+<div id="notes-list"></div>
 
 <script>
   interface Note {
@@ -52,7 +49,7 @@
         <p>${escapeHtml(n.content)}</p>
         <div class="note-meta">
           <time>${formatTime(n.createdAt)}</time>
-          <button data-delete="${n.id}" class="btn-icon" title="删除">×</button>
+          <button data-delete="${n.id}" class="btn-icon" title="删除">&times;</button>
         </div>
       </article>`
       )
@@ -117,51 +114,17 @@
 </script>
 
 <style>
-  #notes-app {
-    margin-bottom: 2.5rem;
-  }
-
-  #notes-app h2 {
-    margin-bottom: 1rem;
-  }
-
   #note-form {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
   }
 
   #note-form textarea {
     width: 100%;
-    padding: 0.7rem 0.8rem;
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
+    padding: 0.75rem 0.9rem;
     font-size: 0.95rem;
-    font-family: inherit;
-    background: var(--card-bg);
-    outline: none;
     resize: vertical;
-    transition: border-color 0.2s;
-    line-height: 1.6;
-  }
-
-  #note-form textarea:focus {
-    border-color: var(--text);
-  }
-
-  #note-form button {
-    margin-top: 0.5rem;
-    padding: 0.5rem 1.2rem;
-    background: var(--text);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    cursor: pointer;
-    font-family: inherit;
-    transition: opacity 0.2s;
-  }
-
-  #note-form button:hover {
-    opacity: 0.8;
+    line-height: 1.7;
+    margin-bottom: 0.6rem;
   }
 
   .empty-hint {
@@ -172,16 +135,21 @@
   }
 
   .note-card {
-    padding: 1rem;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    margin-bottom: 0.75rem;
-    box-shadow: var(--shadow);
+    padding: 1.05rem 1.15rem;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.2s, var(--transition-theme);
+  }
+
+  .note-card:last-child {
+    border-bottom: none;
+  }
+
+  .note-card:hover {
+    background: var(--accent-light);
   }
 
   .note-card p {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.45rem;
     white-space: pre-wrap;
     word-break: break-word;
   }
@@ -190,7 +158,23 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     color: var(--text-secondary);
+  }
+
+  .btn-icon {
+    background: none;
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0 0.2rem;
+    line-height: 1;
+    transition: color 0.2s;
+    border-radius: 4px;
+  }
+
+  .btn-icon:hover {
+    color: #ef4444;
   }
 </style>

@@ -8,7 +8,9 @@ import TodoList from '../components/TodoList.astro';
     <h1>待办</h1>
     <p class="subtitle">管理你的日常任务。</p>
   </section>
-  <TodoList />
+  <div class="card card-body">
+    <TodoList />
+  </div>
 </Layout>
 
 <style>
@@ -23,5 +25,9 @@ import TodoList from '../components/TodoList.astro';
   .subtitle {
     color: var(--text-secondary);
     font-size: 0.95rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
   }
 </style>
