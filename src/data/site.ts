@@ -26,6 +26,6 @@ export const stats = {
 export const techBadges = [
   { name: 'Vue', color: '#42b883' },
   { name: 'React', color: '#61dafb' },
-  { name: 'Next.js', color: '#ffffff' },
+  { name: 'Next.js', color: '#171717' },
   { name: 'Go', color: '#00add8' },
 ];

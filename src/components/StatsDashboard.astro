@@ -6,6 +6,7 @@ const { buildDate, badges } = Astro.props;
 
 <!-- 底部状态看板 -->
 <div class="dashboard card" id="site-dashboard">
+  <span id="build-date-data" style="display:none">{buildDate}</span>
   <!-- 时钟 -->
   <div class="db-clock" id="db-clock">00:00:00</div>
 
@@ -24,7 +25,7 @@ const { buildDate, badges } = Astro.props;
 </div>
 
 <script>
-  const buildDate = new Date('{buildDate}');
+  const buildDate = new Date(document.getElementById('build-date-data')?.textContent || '');
 
   // 时钟
   function updateClock() {
@@ -40,7 +41,7 @@ const { buildDate, badges } = Astro.props;
     const now = new Date();
     const diff = Math.floor((now.getTime() - buildDate.getTime()) / 86_400_000);
     const el = document.getElementById('db-days');
-    if (el) el.textContent = String(diff);
+    if (el) el.textContent = String(isNaN(diff) ? 0 : diff);
   }
   updateUptime();
 </script>
