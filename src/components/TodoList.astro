@@ -1,0 +1,252 @@
+<!-- 待办清单组件 - 数据存储在 localStorage -->
+<div id="todo-app">
+  <h2>待办事项</h2>
+  <form id="todo-form">
+    <input
+      type="text"
+      id="todo-input"
+      placeholder="添加新任务..."
+      autocomplete="off"
+    />
+    <button type="submit">添加</button>
+  </form>
+  <ul id="todo-list"></ul>
+  <div class="todo-footer">
+    <span id="todo-count">0 项待完成</span>
+    <button id="todo-clear" class="btn-link">清除已完成</button>
+  </div>
+</div>
+
+<script>
+  interface Todo {
+    id: string;
+    text: string;
+    done: boolean;
+    createdAt: number;
+  }
+
+  const STORAGE_KEY = 'lingluo-todos';
+  let todos: Todo[] = [];
+
+  function load(): Todo[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function save(): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  }
+
+  function render(): void {
+    const list = document.getElementById('todo-list')!;
+    const countEl = document.getElementById('todo-count')!;
+
+    list.innerHTML = todos
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .map(
+        (t) => `
+      <li class="${t.done ? 'done' : ''}">
+        <label>
+          <input type="checkbox" data-id="${t.id}" ${t.done ? 'checked' : ''} />
+          <span>${escapeHtml(t.text)}</span>
+        </label>
+        <button data-delete="${t.id}" class="btn-icon" title="删除">×</button>
+      </li>`
+      )
+      .join('');
+
+    const remaining = todos.filter((t) => !t.done).length;
+    countEl.textContent = `${remaining} 项待完成`;
+  }
+
+  function escapeHtml(s: string): string {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function addTodo(text: string): void {
+    todos.push({
+      id: crypto.randomUUID(),
+      text: text.trim(),
+      done: false,
+      createdAt: Date.now(),
+    });
+    save();
+    render();
+  }
+
+  function toggleTodo(id: string): void {
+    const todo = todos.find((t) => t.id === id);
+    if (todo) {
+      todo.done = !todo.done;
+      save();
+      render();
+    }
+  }
+
+  function deleteTodo(id: string): void {
+    todos = todos.filter((t) => t.id !== id);
+    save();
+    render();
+  }
+
+  function clearDone(): void {
+    todos = todos.filter((t) => !t.done);
+    save();
+    render();
+  }
+
+  document.getElementById('todo-form')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('todo-input') as HTMLInputElement;
+    const text = input.value.trim();
+    if (text) {
+      addTodo(text);
+      input.value = '';
+    }
+  });
+
+  document.getElementById('todo-list')!.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const checkbox = target.closest<HTMLInputElement>('input[type="checkbox"]');
+    const deleteBtn = target.closest<HTMLButtonElement>('[data-delete]');
+
+    if (checkbox) {
+      toggleTodo(checkbox.dataset.id!);
+    }
+    if (deleteBtn) {
+      deleteTodo(deleteBtn.dataset.delete!);
+    }
+  });
+
+  document.getElementById('todo-clear')!.addEventListener('click', clearDone);
+
+  // 初始化
+  todos = load();
+  render();
+</script>
+
+<style>
+  #todo-app {
+    margin-bottom: 2rem;
+  }
+
+  #todo-app h2 {
+    margin-bottom: 1rem;
+  }
+
+  #todo-form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+  }
+
+  #todo-form input {
+    flex: 1;
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--card-bg);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  #todo-form input:focus {
+    border-color: var(--text);
+  }
+
+  #todo-form button {
+    padding: 0.6rem 1.2rem;
+    background: var(--text);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+  }
+
+  #todo-form button:hover {
+    opacity: 0.8;
+  }
+
+  #todo-list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 0.75rem;
+  }
+
+  #todo-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  #todo-list li.done span {
+    text-decoration: line-through;
+    color: var(--text-secondary);
+  }
+
+  #todo-list label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    cursor: pointer;
+    flex: 1;
+  }
+
+  #todo-list input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--text);
+    cursor: pointer;
+  }
+
+  .btn-icon {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    color: var(--text-secondary);
+    padding: 0 0.25rem;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .btn-icon:hover {
+    color: #e53e3e;
+  }
+
+  .todo-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+  }
+
+  .btn-link {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-family: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  .btn-link:hover {
+    color: var(--text);
+  }
+</style>

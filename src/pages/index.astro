@@ -1,0 +1,163 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+import TodoList from '../components/TodoList.astro';
+import NoteEditor from '../components/NoteEditor.astro';
+
+const posts = await getCollection('posts');
+const sortedPosts = posts.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+---
+
+<Layout>
+  <!-- 个人信息 -->
+  <section class="profile">
+    <div class="avatar">LL</div>
+    <h1>LingLuo</h1>
+    <p class="bio">
+      开发者 · 极简主义者<br />
+      专注于构建简洁高效的 Web 体验。
+    </p>
+    <div class="links">
+      <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+      <span class="sep">·</span>
+      <a href="mailto:lingluo@example.com">Email</a>
+    </div>
+  </section>
+
+  <!-- 待办清单 -->
+  <section class="section">
+    <TodoList />
+  </section>
+
+  <!-- 快速笔记 -->
+  <section class="section">
+    <NoteEditor />
+  </section>
+
+  <!-- 文章列表 -->
+  <section class="section">
+    <h2>文章</h2>
+    {
+      sortedPosts.length === 0 ? (
+        <p class="empty-hint">暂无文章。</p>
+      ) : (
+        <div class="post-list">
+          {sortedPosts.map((post) => (
+            <a href={`/posts/${post.id}`} class="post-item">
+              <h3>{post.data.title}</h3>
+              {post.data.description && <p>{post.data.description}</p>}
+              <time>
+                {post.data.date.toLocaleDateString('zh-CN', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </time>
+            </a>
+          ))}
+        </div>
+      )
+    }
+  </section>
+</Layout>
+
+<style>
+  .profile {
+    text-align: center;
+    padding: 2rem 0 3rem;
+  }
+
+  .avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--text);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .profile h1 {
+    margin-bottom: 0.5rem;
+  }
+
+  .bio {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+  }
+
+  .links {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+
+  .links a {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .links a:hover {
+    border-color: var(--text);
+  }
+
+  .sep {
+    margin: 0 0.5rem;
+    color: var(--border);
+  }
+
+  .section {
+    margin-bottom: 3rem;
+  }
+
+  .section h2 {
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .post-item {
+    display: block;
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--border);
+    transition: padding 0.2s;
+  }
+
+  .post-item:hover {
+    padding-left: 0.5rem;
+  }
+
+  .post-item h3 {
+    font-size: 1rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .post-item p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .post-item time {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+
+  .empty-hint {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+  }
+</style>

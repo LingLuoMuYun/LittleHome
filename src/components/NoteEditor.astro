@@ -1,0 +1,196 @@
+<!-- 快速笔记组件 - 数据存储在 localStorage -->
+<div id="notes-app">
+  <h2>快速笔记</h2>
+  <form id="note-form">
+    <textarea
+      id="note-input"
+      placeholder="写下你的想法..."
+      rows="3"
+      autocomplete="off"
+    ></textarea>
+    <button type="submit">发布</button>
+  </form>
+  <div id="notes-list"></div>
+</div>
+
+<script>
+  interface Note {
+    id: string;
+    content: string;
+    createdAt: number;
+  }
+
+  const STORAGE_KEY = 'lingluo-notes';
+  let notes: Note[] = [];
+
+  function load(): Note[] {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? JSON.parse(raw) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function save(): void {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(notes));
+  }
+
+  function render(): void {
+    const container = document.getElementById('notes-list')!;
+    if (notes.length === 0) {
+      container.innerHTML =
+        '<p class="empty-hint">暂无笔记，写点什么吧。</p>';
+      return;
+    }
+
+    container.innerHTML = notes
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .map(
+        (n) => `
+      <article class="note-card">
+        <p>${escapeHtml(n.content)}</p>
+        <div class="note-meta">
+          <time>${formatTime(n.createdAt)}</time>
+          <button data-delete="${n.id}" class="btn-icon" title="删除">×</button>
+        </div>
+      </article>`
+      )
+      .join('');
+  }
+
+  function escapeHtml(s: string): string {
+    const d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function formatTime(ts: number): string {
+    const d = new Date(ts);
+    const now = new Date();
+    const diff = now.getTime() - d.getTime();
+
+    if (diff < 60_000) return '刚刚';
+    if (diff < 3_600_000) return `${Math.floor(diff / 60_000)} 分钟前`;
+    if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)} 小时前`;
+    if (diff < 604_800_000) return `${Math.floor(diff / 86_400_000)} 天前`;
+
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  }
+
+  function addNote(content: string): void {
+    notes.push({
+      id: crypto.randomUUID(),
+      content: content.trim(),
+      createdAt: Date.now(),
+    });
+    save();
+    render();
+  }
+
+  function deleteNote(id: string): void {
+    notes = notes.filter((n) => n.id !== id);
+    save();
+    render();
+  }
+
+  document.getElementById('note-form')!.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const textarea = document.getElementById('note-input') as HTMLTextAreaElement;
+    const text = textarea.value.trim();
+    if (text) {
+      addNote(text);
+      textarea.value = '';
+    }
+  });
+
+  document.getElementById('notes-list')!.addEventListener('click', (e) => {
+    const target = e.target as HTMLElement;
+    const deleteBtn = target.closest<HTMLButtonElement>('[data-delete]');
+    if (deleteBtn) {
+      deleteNote(deleteBtn.dataset.delete!);
+    }
+  });
+
+  notes = load();
+  render();
+</script>
+
+<style>
+  #notes-app {
+    margin-bottom: 2.5rem;
+  }
+
+  #notes-app h2 {
+    margin-bottom: 1rem;
+  }
+
+  #note-form {
+    margin-bottom: 1.5rem;
+  }
+
+  #note-form textarea {
+    width: 100%;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-family: inherit;
+    background: var(--card-bg);
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.2s;
+    line-height: 1.6;
+  }
+
+  #note-form textarea:focus {
+    border-color: var(--text);
+  }
+
+  #note-form button {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1.2rem;
+    background: var(--text);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    cursor: pointer;
+    font-family: inherit;
+    transition: opacity 0.2s;
+  }
+
+  #note-form button:hover {
+    opacity: 0.8;
+  }
+
+  .empty-hint {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-align: center;
+    padding: 2rem 0;
+  }
+
+  .note-card {
+    padding: 1rem;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 0.75rem;
+    box-shadow: var(--shadow);
+  }
+
+  .note-card p {
+    margin-bottom: 0.5rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .note-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+  }
+</style>
