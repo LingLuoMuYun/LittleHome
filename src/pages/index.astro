@@ -44,7 +44,11 @@ const quickLinks = [
   <!-- 第一行：个人信息 + 音乐 -->
   <div class="home-row">
     <div class="home-profile">
-      <ProfileCard />
+      <ProfileCard
+        postCount={statPostCount}
+        projectCount={statProjectCount}
+        photoCount={statPhotoCount}
+      />
     </div>
     <div class="home-music">
       <a href="/music" class="music-home-card card">
@@ -87,12 +91,8 @@ const quickLinks = [
     </div>
   </div>
 
-  <!-- 统计注入 -->
+  <!-- 搜索触发脚本 -->
   <script>
-    document.querySelectorAll<HTMLElement>('[data-key="posts"]').forEach(el => el.textContent = '{String(statPostCount)}');
-    document.querySelectorAll<HTMLElement>('[data-key="projects"]').forEach(el => el.textContent = '{String(statProjectCount)}');
-    document.querySelectorAll<HTMLElement>('[data-key="photos"]').forEach(el => el.textContent = '{String(statPhotoCount)}');
-
     // 首页搜索按钮 -> 触发全局搜索
     document.getElementById('home-search-btn')?.addEventListener('click', () => {
       const trigger = document.getElementById('search-trigger');
