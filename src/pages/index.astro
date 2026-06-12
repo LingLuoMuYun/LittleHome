@@ -1,200 +1,252 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
+import ProfileCard from '../components/ProfileCard.astro';
+import PostCarousel from '../components/PostCarousel.astro';
+import QuickLinks from '../components/QuickLinks.astro';
+import StatsDashboard from '../components/StatsDashboard.astro';
+import { site, stats, techBadges } from '../data/site';
+import { projects } from '../data/projects';
+import { photos } from '../data/photos';
 
 const posts = await getCollection('posts');
-const sortedPosts = posts.sort(
-  (a, b) => b.data.date.getTime() - a.data.date.getTime()
-);
+const sortedPosts = posts
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+const latestPosts = sortedPosts.slice(0, 6);
+
+const statPostCount = stats.postCount || sortedPosts.length;
+const statProjectCount = stats.projectCount || projects.length;
+const statPhotoCount = stats.photoCount || photos.length;
+
+const quickLinks = [
+  { emoji: '📝', title: '发帖', desc: '记录想法与灵感', href: '/notes' },
+  { emoji: '✅', title: '待办', desc: '管理日常任务', href: '/todos' },
+  { emoji: '💬', title: '说说', desc: '碎片随想片刻记录', href: '/moments' },
+  { emoji: '🖼️', title: '照片', desc: '光影瞬间', href: '/photowall' },
+  { emoji: '🎵', title: '音乐', desc: '为生活伴奏', href: '/music' },
+  { emoji: '📂', title: '归档', desc: '所有文章时间线', href: '/timeline' },
+  { emoji: '🚀', title: '项目', desc: '开源作品展示', href: '/projects' },
+  { emoji: '🔗', title: '友链', desc: '朋友们的主页', href: '/friends' },
+];
 ---
 
 <Layout>
-  <!-- 个人信息卡片 -->
-  <section class="profile card">
-    <div class="avatar">LL</div>
-    <h1>LingLuo</h1>
-    <p class="bio">
-      开发者 · 极简主义者<br />
-      专注于构建简洁高效的 Web 体验。
-    </p>
-    <div class="links">
-      <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
-      <span class="sep">·</span>
-      <a href="mailto:lingluo@example.com">Email</a>
-    </div>
-  </section>
+  <!-- 首页专属搜索栏 -->
+  <div class="home-search">
+    <button id="home-search-btn" class="home-search-bar card">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span>搜索文章标题、描述或标签...</span>
+      <kbd>Ctrl+K</kbd>
+    </button>
+  </div>
 
-  <!-- 文章列表 -->
-  <section class="section">
-    <h2>文章</h2>
-    {
-      sortedPosts.length === 0 ? (
-        <p class="empty-hint">暂无文章。</p>
-      ) : (
-        <div class="post-list">
-          {sortedPosts.map((post) => (
-            <a href={`/posts/${post.id}`} class="post-item card">
-              <div class="post-item-top">
-                <h3>{post.data.title}</h3>
-                <span class="category-tag">{post.data.category}</span>
-              </div>
-              {post.data.description && <p>{post.data.description}</p>}
-              <div class="post-item-bottom">
-                <time>
-                  {post.data.date.toLocaleDateString('zh-CN', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                  })}
-                </time>
-                {post.data.tags.length > 0 && (
-                  <div class="tags">
-                    {post.data.tags.map((t) => <span class="tag">{t}</span>)}
-                  </div>
-                )}
-              </div>
-            </a>
-          ))}
+  <!-- 第一行：个人信息 + 音乐 -->
+  <div class="home-row">
+    <div class="home-profile">
+      <ProfileCard />
+    </div>
+    <div class="home-music">
+      <a href="/music" class="music-home-card card">
+        <div class="mhc-visual">
+          <div class="mhc-disc"></div>
         </div>
-      )
-    }
-  </section>
+        <div class="mhc-info">
+          <span class="mhc-badge">CLOUD MUSIC</span>
+          <span class="mhc-title">音乐盒子</span>
+          <span class="mhc-sub">网易云音乐精选</span>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- 第二行：文章轮播 + 快捷入口 -->
+  <div class="home-row">
+    <div class="home-carousel">
+      {latestPosts.length > 0 ? (
+        <PostCarousel posts={latestPosts} />
+      ) : (
+        <div class="card empty-card">
+          <p>暂无文章</p>
+          <p class="hint">在 <code>src/content/posts/</code> 添加你的第一篇文章</p>
+        </div>
+      )}
+    </div>
+    <div class="home-quick">
+      <QuickLinks links={quickLinks} />
+    </div>
+  </div>
+
+  <!-- 第三行：底部看板 -->
+  <div class="home-row">
+    <div class="home-dashboard">
+      <StatsDashboard
+        buildDate={site.buildDate}
+        badges={techBadges}
+      />
+    </div>
+  </div>
+
+  <!-- 统计注入 -->
+  <script>
+    document.querySelectorAll<HTMLElement>('[data-key="posts"]').forEach(el => el.textContent = '{String(statPostCount)}');
+    document.querySelectorAll<HTMLElement>('[data-key="projects"]').forEach(el => el.textContent = '{String(statProjectCount)}');
+    document.querySelectorAll<HTMLElement>('[data-key="photos"]').forEach(el => el.textContent = '{String(statPhotoCount)}');
+
+    // 首页搜索按钮 -> 触发全局搜索
+    document.getElementById('home-search-btn')?.addEventListener('click', () => {
+      const trigger = document.getElementById('search-trigger');
+      if (trigger) trigger.click();
+    });
+  </script>
 </Layout>
 
 <style>
-  .profile {
-    text-align: center;
-    padding: 2.5rem 2rem;
-    margin-bottom: 3rem;
+  .home-search {
+    margin-bottom: 2rem;
   }
 
-  .avatar {
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--accent), #8b5cf6);
-    color: #fff;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 1.35rem;
-    letter-spacing: -0.02em;
-    margin-bottom: 1.25rem;
-    box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
-  }
-
-  .profile h1 {
-    margin-bottom: 0.4rem;
-  }
-
-  .bio {
-    color: var(--text-secondary);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin-bottom: 0.75rem;
-  }
-
-  .links {
-    font-size: 0.9rem;
-    color: var(--text-secondary);
-  }
-
-  .links a {
-    color: var(--accent);
-  }
-
-  .links a:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-  }
-
-  .sep {
-    margin: 0 0.6rem;
-    color: var(--border);
-  }
-
-  .section {
-    margin-bottom: 3rem;
-  }
-
-  .section h2 {
-    margin-bottom: 1rem;
-  }
-
-  .post-list {
+  .home-search-bar {
     display: flex;
-    flex-direction: column;
+    align-items: center;
     gap: 0.75rem;
-  }
-
-  .post-item {
-    display: block;
-    padding: 1.15rem 1.35rem;
-  }
-
-  .post-item-top {
-    display: flex;
-    align-items: center;
-    gap: 0.6rem;
-    margin-bottom: 0.2rem;
-  }
-
-  .post-item-top h3 {
-    font-size: 1rem;
-  }
-
-  .category-tag {
-    font-size: 0.72rem;
-    background: var(--accent-light);
-    color: var(--accent);
-    padding: 0.12em 0.55em;
-    border-radius: 10px;
-    font-weight: 500;
-    flex-shrink: 0;
-  }
-
-  .post-item p {
+    width: 100%;
+    padding: 0.85rem 1.25rem;
+    cursor: pointer;
     color: var(--text-secondary);
-    font-size: 0.88rem;
-    margin-bottom: 0.35rem;
-  }
-
-  .post-item-bottom {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .post-item-bottom time {
-    font-size: 0.78rem;
-    color: var(--text-secondary);
-    opacity: 0.8;
-  }
-
-  .tags {
-    display: flex;
-    gap: 0.35rem;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    font-size: 0.7rem;
-    color: var(--text-secondary);
+    font-size: 0.92rem;
     background: var(--bg-card);
     border: 1px solid var(--border);
-    padding: 0.1em 0.5em;
-    border-radius: 8px;
-    transition: color 0.2s, border-color 0.2s;
+    font-family: inherit;
+    text-align: left;
   }
 
-  .post-item:hover .tag {
-    border-color: var(--accent);
+  .home-search-bar span {
+    flex: 1;
+  }
+
+  .home-search-bar kbd {
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    background: var(--accent-light);
     color: var(--accent);
+    padding: 0.2em 0.55em;
+    border-radius: 5px;
+    border: 1px solid var(--border);
   }
 
-  .empty-hint {
+  .home-row {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .home-profile { grid-column: span 7; }
+  .home-music { grid-column: span 5; }
+  .home-carousel { grid-column: span 5; }
+  .home-quick { grid-column: span 7; }
+  .home-dashboard { grid-column: span 12; }
+
+  @media (max-width: 900px) {
+    .home-row { display: flex; flex-direction: column; gap: 1rem; }
+    .home-profile, .home-music, .home-carousel, .home-quick { grid-column: span 12; }
+  }
+
+  /* 音乐卡片 */
+  .music-home-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+    min-height: 100%;
+    gap: 1rem;
+  }
+
+  .mhc-visual {
+    position: relative;
+  }
+
+  .mhc-disc {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #1e293b 100%);
+    border: 3px solid rgba(255,255,255,0.3);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    position: relative;
+    animation: disc-spin 6s linear infinite paused;
+  }
+
+  .music-home-card:hover .mhc-disc {
+    animation-play-state: running;
+  }
+
+  .mhc-disc::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(4px);
+  }
+
+  @keyframes disc-spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  .mhc-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+  }
+
+  .mhc-badge {
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    background: var(--accent-light);
+    padding: 0.25em 0.7em;
+    border-radius: 10px;
+    width: fit-content;
+    margin: 0 auto;
+  }
+
+  .mhc-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .mhc-sub {
+    font-size: 0.78rem;
     color: var(--text-secondary);
-    font-size: 0.9rem;
+  }
+
+  .empty-card {
+    padding: 3rem 2rem;
+    text-align: center;
+    min-height: 380px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  .empty-card .hint {
+    font-size: 0.82rem;
+    margin-top: 0.4rem;
+    opacity: 0.7;
+  }
+
+  .empty-card code {
+    font-size: 0.8em;
   }
 </style>

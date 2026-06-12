@@ -9,8 +9,8 @@
   --border: rgba(0, 0, 0, 0.06);
   --accent: #6366f1;
   --accent-light: rgba(99, 102, 241, 0.08);
-  --radius: 16px;
-  --radius-sm: 10px;
+  --radius: 24px;
+  --radius-sm: 12px;
   --shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
   --shadow-hover: 0 8px 36px rgba(0, 0, 0, 0.09);
   --blur: blur(20px);
@@ -196,7 +196,7 @@ button,
 
 /* 工具类 */
 .container {
-  max-width: 720px;
+  max-width: 1050px;
   margin: 0 auto;
   padding: 0 1.25rem;
 }

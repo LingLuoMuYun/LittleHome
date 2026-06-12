@@ -1,0 +1,73 @@
+---
+interface Link {
+  emoji: string;
+  title: string;
+  desc: string;
+  href: string;
+}
+interface Props { links: Link[]; }
+const { links } = Astro.props;
+---
+
+<!-- 首页专属快捷入口卡片 -->
+<div class="quick-links-grid">
+  {links.map((link) => (
+    <a href={link.href} class="quick-link card">
+      <span class="ql-emoji">{link.emoji}</span>
+      <div class="ql-info">
+        <span class="ql-title">{link.title}</span>
+        <span class="ql-desc">{link.desc}</span>
+      </div>
+    </a>
+  ))}
+</div>
+
+<style>
+  .quick-links-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  @media (max-width: 480px) {
+    .quick-links-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .quick-link {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem 1.2rem;
+  }
+
+  .ql-emoji {
+    font-size: 1.5rem;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-light);
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .ql-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .ql-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .ql-desc {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+</style>
