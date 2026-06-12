@@ -1,0 +1,113 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { friends } from '../data/friends';
+---
+
+<Layout>
+  <section class="page-header">
+    <h1>友链</h1>
+    <p class="subtitle">朋友们的主页。</p>
+  </section>
+
+  {
+    friends.length === 0 ? (
+      <div class="card empty-card">
+        <p>暂无友链。</p>
+        <p class="hint">在 <code>src/data/friends.ts</code> 中添加你的朋友们。</p>
+      </div>
+    ) : (
+      <div class="friends-grid">
+        {friends.map((friend) => (
+          <a
+            href={friend.url}
+            target="_blank"
+            rel="noopener"
+            class="friend-card card"
+          >
+            <img
+              src={friend.avatar}
+              alt={friend.name}
+              loading="lazy"
+              class="friend-avatar"
+            />
+            <div class="friend-info">
+              <h3>{friend.name}</h3>
+              <p>{friend.description}</p>
+            </div>
+          </a>
+        ))}
+      </div>
+    )
+  }
+</Layout>
+
+<style>
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .empty-card {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: var(--text-secondary);
+  }
+
+  .empty-card .hint {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    opacity: 0.7;
+  }
+
+  .empty-card code {
+    font-size: 0.82em;
+  }
+
+  .friends-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+
+  .friend-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+  }
+
+  .friend-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: var(--accent-light);
+  }
+
+  .friend-info {
+    min-width: 0;
+  }
+
+  .friend-info h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.15rem;
+  }
+
+  .friend-info p {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+</style>

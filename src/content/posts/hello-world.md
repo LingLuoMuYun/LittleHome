@@ -2,6 +2,8 @@
 title: "第一篇文章"
 date: 2026-06-10
 description: "这是我的第一篇个人博客文章"
+tags: ["入门", "Astro"]
+category: "技术"
 ---
 
 ## 欢迎来到我的主页

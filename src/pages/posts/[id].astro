@@ -1,6 +1,7 @@
 ---
 import { getCollection, getEntry } from 'astro:content';
 import Layout from '../../layouts/Layout.astro';
+import TableOfContents from '../../components/TableOfContents.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
@@ -17,31 +18,95 @@ if (!post) {
   return Astro.redirect('/404');
 }
 
+const allPosts = await getCollection('posts');
+const relatedPosts = allPosts
+  .filter((p) => p.id !== post.id && p.data.category === post.data.category)
+  .slice(0, 3);
+const latestPosts = allPosts
+  .filter((p) => p.id !== post.id)
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 3);
+
 const { Content } = await post.render();
 ---
 
 <Layout>
-  <article class="card card-body">
-    <header class="post-header">
-      <h1>{post.data.title}</h1>
-      <time>
-        {post.data.date.toLocaleDateString('zh-CN', {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
-        })}
-      </time>
-    </header>
-    <div class="post-body">
-      <Content />
-    </div>
-  </article>
-  <footer class="post-footer">
-    <a href="/">&larr; 返回首页</a>
-  </footer>
+  <div class="post-layout">
+    <main class="post-main">
+      <article class="card card-body">
+        <header class="post-header">
+          <div class="post-meta-top">
+            <span class="category-badge">{post.data.category}</span>
+          </div>
+          <h1>{post.data.title}</h1>
+          <div class="post-meta-bottom">
+            <time>
+              {post.data.date.toLocaleDateString('zh-CN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+              })}
+            </time>
+            {post.data.tags.length > 0 && (
+              <span class="sep-inline">·</span>
+            )}
+            {post.data.tags.length > 0 && (
+              <div class="tags">
+                {post.data.tags.map((t) => <span class="tag">{t}</span>)}
+              </div>
+            )}
+          </div>
+        </header>
+        <div class="post-body">
+          <Content />
+        </div>
+      </article>
+      <footer class="post-footer">
+        <a href="/">&larr; 返回首页</a>
+      </footer>
+    </main>
+
+    <aside class="post-sidebar">
+      <div class="sidebar-card card">
+        <h4>目录</h4>
+        <TableOfContents />
+      </div>
+      {
+        relatedPosts.length > 0 && (
+          <div class="sidebar-card card">
+            <h4>相关文章</h4>
+            <ul class="sidebar-list">
+              {relatedPosts.map((p) => (
+                <li><a href={`/posts/${p.id}`}>{p.data.title}</a></li>
+              ))}
+            </ul>
+          </div>
+        )
+      }
+      <div class="sidebar-card card">
+        <h4>最近文章</h4>
+        <ul class="sidebar-list">
+          {latestPosts.map((p) => (
+            <li><a href={`/posts/${p.id}`}>{p.data.title}</a></li>
+          ))}
+        </ul>
+      </div>
+    </aside>
+  </div>
 </Layout>
 
 <style>
+  .post-layout {
+    display: grid;
+    grid-template-columns: 1fr 240px;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  .post-main {
+    min-width: 0;
+  }
+
   .card-body {
     padding: 2rem 2rem 2.5rem;
   }
@@ -52,14 +117,54 @@ const { Content } = await post.render();
     border-bottom: 1px solid var(--border);
   }
 
+  .post-meta-top {
+    margin-bottom: 0.6rem;
+  }
+
+  .category-badge {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 500;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 0.2em 0.7em;
+    border-radius: 12px;
+  }
+
   .post-header h1 {
     margin-bottom: 0.5rem;
     font-size: 1.65rem;
   }
 
-  .post-header time {
+  .post-meta-bottom {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .post-meta-bottom time {
     color: var(--text-secondary);
     font-size: 0.88rem;
+  }
+
+  .sep-inline {
+    color: var(--border);
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 0.12em 0.55em;
+    border-radius: 8px;
   }
 
   .post-body {
@@ -80,6 +185,46 @@ const { Content } = await post.render();
     font-family: var(--font-sans);
   }
 
+  /* 侧栏 */
+  .post-sidebar {
+    position: sticky;
+    top: 5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .sidebar-card {
+    padding: 1.15rem 1.25rem;
+  }
+
+  .sidebar-card h4 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .sidebar-list {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .sidebar-list a {
+    font-size: 0.85rem;
+    color: var(--text);
+    transition: color 0.2s;
+  }
+
+  .sidebar-list a:hover {
+    color: var(--accent);
+  }
+
   .post-footer {
     margin-top: 2rem;
     text-align: center;
@@ -92,5 +237,15 @@ const { Content } = await post.render();
 
   .post-footer a:hover {
     color: var(--accent);
+  }
+
+  /* 移动端隐藏侧栏 */
+  @media (max-width: 768px) {
+    .post-layout {
+      grid-template-columns: 1fr;
+    }
+    .post-sidebar {
+      display: none;
+    }
   }
 </style>

@@ -1,0 +1,224 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../layouts/Layout.astro';
+
+const posts = await getCollection('posts');
+const sortedPosts = posts.sort(
+  (a, b) => b.data.date.getTime() - a.data.date.getTime()
+);
+
+// 收集所有标签及其计数
+const tagCounts: Record<string, number> = {};
+sortedPosts.forEach((p) => {
+  p.data.tags.forEach((t) => {
+    tagCounts[t] = (tagCounts[t] || 0) + 1;
+  });
+});
+const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]);
+
+// 按年份分组
+const byYear: Record<string, typeof sortedPosts> = {};
+sortedPosts.forEach((p) => {
+  const year = p.data.date.getFullYear().toString();
+  if (!byYear[year]) byYear[year] = [];
+  byYear[year].push(p);
+});
+const years = Object.keys(byYear).sort((a, b) => parseInt(b) - parseInt(a));
+---
+
+<Layout>
+  <section class="page-header">
+    <h1>归档</h1>
+    <p class="subtitle">共 {sortedPosts.length} 篇文章</p>
+  </section>
+
+  <!-- 标签筛选 -->
+  <div class="tag-filter">
+    <button class="tag-filter-btn active" data-tag="">全部</button>
+    {allTags.map(([tag, count]) => (
+      <button class="tag-filter-btn" data-tag={tag}>
+        {tag} <span class="tag-count">{count}</span>
+      </button>
+    ))}
+  </div>
+
+  <!-- 时间线 -->
+  <div class="timeline">
+    {years.map((year) => (
+      <div class="year-group" data-year={year}>
+        <h2 class="year-heading">{year}</h2>
+        <div class="year-posts">
+          {byYear[year].map((post) => (
+            <a
+              href={`/posts/${post.id}`}
+              class="timeline-item card"
+              data-tags={post.data.tags.join(',')}
+            >
+              <time class="timeline-date">
+                {post.data.date.toLocaleDateString('zh-CN', {
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </time>
+              <div class="timeline-content">
+                <h3>{post.data.title}</h3>
+                <div class="timeline-meta">
+                  <span class="category-tag">{post.data.category}</span>
+                  {post.data.tags.map((t) => <span class="tag">{t}</span>)}
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </div>
+    ))}
+  </div>
+</Layout>
+
+<script>
+  // 标签筛选
+  const filterBtns = document.querySelectorAll('.tag-filter-btn');
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach((b) => b.classList.remove('active'));
+      btn.classList.add('active');
+      const targetTag = (btn as HTMLElement).dataset.tag || '';
+
+      document.querySelectorAll('.year-group').forEach((group) => {
+        const el = group as HTMLElement;
+        let visible = 0;
+        el.querySelectorAll('.timeline-item').forEach((item) => {
+          const el2 = item as HTMLElement;
+          const tags = (el2.dataset.tags || '').split(',').filter(Boolean);
+          if (!targetTag || tags.includes(targetTag)) {
+            el2.style.display = '';
+            visible++;
+          } else {
+            el2.style.display = 'none';
+          }
+        });
+        el.style.display = visible > 0 ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+<style>
+  .page-header {
+    margin-bottom: 2rem;
+  }
+
+  .page-header h1 {
+    margin-bottom: 0.25rem;
+  }
+
+  .subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+  }
+
+  .tag-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .tag-filter-btn {
+    font-size: 0.8rem;
+    padding: 0.3em 0.75em;
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+  }
+
+  .tag-filter-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .tag-filter-btn.active {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+
+  .tag-count {
+    opacity: 0.7;
+    font-size: 0.75em;
+  }
+
+  .timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .year-heading {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    color: var(--accent);
+  }
+
+  .year-posts {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .timeline-item {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1rem 1.35rem;
+  }
+
+  .timeline-date {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    flex-shrink: 0;
+    width: 56px;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .timeline-content {
+    flex: 1;
+  }
+
+  .timeline-content h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .timeline-meta {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .category-tag {
+    font-size: 0.68rem;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 0.1em 0.5em;
+    border-radius: 8px;
+    font-weight: 500;
+  }
+
+  .tag {
+    font-size: 0.68rem;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    padding: 0.1em 0.5em;
+    border-radius: 8px;
+  }
+</style>

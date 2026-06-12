@@ -34,15 +34,25 @@ const sortedPosts = posts.sort(
         <div class="post-list">
           {sortedPosts.map((post) => (
             <a href={`/posts/${post.id}`} class="post-item card">
-              <h3>{post.data.title}</h3>
+              <div class="post-item-top">
+                <h3>{post.data.title}</h3>
+                <span class="category-tag">{post.data.category}</span>
+              </div>
               {post.data.description && <p>{post.data.description}</p>}
-              <time>
-                {post.data.date.toLocaleDateString('zh-CN', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                })}
-              </time>
+              <div class="post-item-bottom">
+                <time>
+                  {post.data.date.toLocaleDateString('zh-CN', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
+                </time>
+                {post.data.tags.length > 0 && (
+                  <div class="tags">
+                    {post.data.tags.map((t) => <span class="tag">{t}</span>)}
+                  </div>
+                )}
+              </div>
             </a>
           ))}
         </div>
@@ -123,9 +133,25 @@ const sortedPosts = posts.sort(
     padding: 1.15rem 1.35rem;
   }
 
-  .post-item h3 {
-    font-size: 1rem;
+  .post-item-top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
     margin-bottom: 0.2rem;
+  }
+
+  .post-item-top h3 {
+    font-size: 1rem;
+  }
+
+  .category-tag {
+    font-size: 0.72rem;
+    background: var(--accent-light);
+    color: var(--accent);
+    padding: 0.12em 0.55em;
+    border-radius: 10px;
+    font-weight: 500;
+    flex-shrink: 0;
   }
 
   .post-item p {
@@ -134,10 +160,37 @@ const sortedPosts = posts.sort(
     margin-bottom: 0.35rem;
   }
 
-  .post-item time {
+  .post-item-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .post-item-bottom time {
     font-size: 0.78rem;
     color: var(--text-secondary);
     opacity: 0.8;
+  }
+
+  .tags {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 0.1em 0.5em;
+    border-radius: 8px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .post-item:hover .tag {
+    border-color: var(--accent);
+    color: var(--accent);
   }
 
   .empty-hint {
