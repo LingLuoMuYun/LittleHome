@@ -1,0 +1,69 @@
+---
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout>
+  <section class="page-header">
+    <h1>音乐</h1>
+    <p class="subtitle">用音乐为生活伴奏。</p>
+  </section>
+
+  <div class="card card-body">
+    <div class="music-grid">
+      {[
+        { id: '298330', name: '纯音乐精选', desc: '钢琴与弦乐的温柔对话' },
+        { id: '72857096', name: '轻音乐', desc: '阅读与专注的背景音' },
+        { id: '2829883282', name: '治愈系', desc: '温暖治愈的旋律' },
+      ].map((pl) => (
+        <div class="music-card">
+          <iframe
+            src={`https://music.163.com/outchain/player?type=0&amp;id=${pl.id}&amp;height=200&amp;auto=0`}
+            width="100%"
+            height="240"
+            frameborder="no"
+            loading="lazy"
+            style="border-radius: var(--radius-sm);"
+          ></iframe>
+          <div class="music-info">
+            <h3>{pl.name}</h3>
+            <p>{pl.desc}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .page-header { margin-bottom: 2rem; }
+  .page-header h1 { margin-bottom: 0.25rem; }
+  .subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+  .card-body { padding: 1.5rem; }
+
+  .music-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.25rem;
+  }
+
+  .music-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .music-info h3 {
+    font-size: 0.95rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .music-info p {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 480px) {
+    .music-grid { grid-template-columns: 1fr; }
+  }
+</style>

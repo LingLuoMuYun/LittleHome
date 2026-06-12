@@ -1,0 +1,92 @@
+<!-- 浮动音乐播放器 — 网易云 iframe 外链 -->
+<div id="floating-player" class="floating-player card hidden">
+  <button id="fp-toggle" class="fp-toggle" title="音乐">🎵</button>
+  <div id="fp-panel" class="fp-panel hidden">
+    <div class="fp-header">
+      <span>音乐</span>
+      <button id="fp-close" class="btn-icon">&times;</button>
+    </div>
+    <div class="fp-playlist">
+      <iframe
+        class="fp-frame"
+        src="https://music.163.com/outchain/player?type=0&amp;id=298330&amp;height=32&amp;auto=0"
+        width="100%"
+        height="52"
+        frameborder="no"
+        loading="lazy"
+      ></iframe>
+    </div>
+  </div>
+</div>
+
+<script>
+  const KEY = 'lingluo-fp-visible';
+  const panel = document.getElementById('fp-panel')!;
+  const player = document.getElementById('floating-player')!;
+
+  if (localStorage.getItem(KEY) !== 'hidden') {
+    player.classList.remove('hidden');
+    panel.classList.remove('hidden');
+  }
+
+  document.getElementById('fp-toggle')!.addEventListener('click', () => {
+    panel.classList.toggle('hidden');
+    localStorage.setItem(KEY, panel.classList.contains('hidden') ? 'hidden' : 'visible');
+  });
+
+  document.getElementById('fp-close')!.addEventListener('click', () => {
+    player.classList.add('hidden');
+    panel.classList.add('hidden');
+    localStorage.setItem(KEY, 'hidden');
+  });
+</script>
+
+<style>
+  .floating-player {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: 150;
+    padding: 0.5rem;
+    min-width: 56px;
+  }
+
+  .floating-player.hidden { display: none; }
+
+  .fp-toggle {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: none;
+    font-size: 1.25rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s, opacity 0.2s;
+  }
+
+  .fp-toggle:hover { transform: scale(1.08); }
+
+  .fp-panel {
+    margin-top: 0.5rem;
+    padding: 0.75rem;
+    min-width: 300px;
+  }
+
+  .fp-panel.hidden { display: none; }
+
+  .fp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+
+  .fp-playlist { display: flex; flex-direction: column; gap: 0.3rem; }
+
+  .fp-frame { border-radius: 6px; border: none; }
+</style>

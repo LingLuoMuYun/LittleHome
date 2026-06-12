@@ -1,0 +1,21 @@
+---
+import Layout from '../layouts/Layout.astro';
+import MomentList from '../components/MomentList.astro';
+---
+
+<Layout>
+  <section class="page-header">
+    <h1>说说</h1>
+    <p class="subtitle">碎片随想，片刻记录。</p>
+  </section>
+  <div class="card card-body">
+    <MomentList />
+  </div>
+</Layout>
+
+<style>
+  .page-header { margin-bottom: 2rem; }
+  .page-header h1 { margin-bottom: 0.25rem; }
+  .subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+  .card-body { padding: 1.5rem; }
+</style>

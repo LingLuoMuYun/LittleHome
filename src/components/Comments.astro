@@ -1,0 +1,34 @@
+<!-- Gitalk 评论组件 -->
+<div id="gitalk-container"></div>
+
+<script>
+  const container = document.getElementById('gitalk-container');
+  if (!container) throw new Error('Gitalk container not found');
+
+  const script = document.createElement('script');
+  script.src = 'https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js';
+  script.onload = () => {
+    const gitalk = new (window as any).Gitalk({
+      clientID: 'Ov23li00000000000000',
+      clientSecret: '0000000000000000000000000000000000000000',
+      repo: 'LittleHome',
+      owner: 'LingLuoMuYun',
+      admin: ['LingLuoMuYun'],
+      id: location.pathname,
+      distractionFreeMode: true,
+    });
+    gitalk.render('gitalk-container');
+  };
+  document.head.appendChild(script);
+
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = 'https://cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.css';
+  document.head.appendChild(link);
+</script>
+
+<style>
+  #gitalk-container {
+    margin-top: 2.5rem;
+  }
+</style>

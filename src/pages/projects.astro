@@ -1,0 +1,99 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { projects } from '../data/projects';
+---
+
+<Layout>
+  <section class="page-header">
+    <h1>项目</h1>
+    <p class="subtitle">个人作品与开源项目。</p>
+  </section>
+
+  {
+    projects.length === 0 ? (
+      <div class="card empty-card">
+        <p>暂无项目展示。</p>
+      </div>
+    ) : (
+      <div class="projects-grid">
+        {projects.map((p) => (
+          <a
+            href={p.githubUrl}
+            target="_blank"
+            rel="noopener"
+            class="project-card card"
+          >
+            <div class="project-icon">{p.icon}</div>
+            <div class="project-info">
+              <h3>{p.name}</h3>
+              <p>{p.description}</p>
+              <div class="project-tags">
+                {p.tags.map((t) => <span class="tag">{t}</span>)}
+              </div>
+            </div>
+          </a>
+        ))}
+      </div>
+    )
+  }
+</Layout>
+
+<style>
+  .page-header { margin-bottom: 2rem; }
+  .page-header h1 { margin-bottom: 0.25rem; }
+  .subtitle { color: var(--text-secondary); font-size: 0.95rem; }
+  .empty-card { text-align: center; padding: 3rem 2rem; color: var(--text-secondary); }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .project-card {
+    display: flex;
+    gap: 1rem;
+    padding: 1.35rem;
+  }
+
+  .project-icon {
+    font-size: 2rem;
+    width: 52px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-light);
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .project-info { flex: 1; min-width: 0; }
+
+  .project-info h3 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .project-info p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+  }
+
+  .project-tags {
+    display: flex;
+    gap: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    font-size: 0.7rem;
+    color: var(--text-secondary);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 0.1em 0.55em;
+    border-radius: 8px;
+  }
+</style>
