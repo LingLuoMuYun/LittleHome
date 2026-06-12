@@ -1,8 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import Layout from '../layouts/Layout.astro';
-import TodoList from '../components/TodoList.astro';
-import NoteEditor from '../components/NoteEditor.astro';
 
 const posts = await getCollection('posts');
 const sortedPosts = posts.sort(
@@ -24,16 +22,6 @@ const sortedPosts = posts.sort(
       <span class="sep">·</span>
       <a href="mailto:lingluo@example.com">Email</a>
     </div>
-  </section>
-
-  <!-- 待办清单 -->
-  <section class="section">
-    <TodoList />
-  </section>
-
-  <!-- 快速笔记 -->
-  <section class="section">
-    <NoteEditor />
   </section>
 
   <!-- 文章列表 -->

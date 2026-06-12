@@ -1,5 +1,13 @@
 ---
 import '../styles/global.css';
+
+const currentPath = Astro.url.pathname;
+
+const navItems = [
+  { href: '/', label: '首页' },
+  { href: '/notes', label: '发帖' },
+  { href: '/todos', label: '待办' },
+];
 ---
 
 <!doctype html>
@@ -16,6 +24,16 @@ import '../styles/global.css';
       <div class="container">
         <nav>
           <a href="/" class="logo">LL</a>
+          <div class="nav-links">
+            {navItems.map((item) => (
+              <a
+                href={item.href}
+                class={`nav-link ${currentPath === item.href ? 'active' : ''}`}
+              >
+                {item.label}
+              </a>
+            ))}
+          </div>
         </nav>
       </div>
     </header>
@@ -40,13 +58,35 @@ import '../styles/global.css';
   nav {
     display: flex;
     align-items: center;
+    justify-content: space-between;
   }
 
   .logo {
     font-weight: 700;
-    font-size: 1.1rem;
+    font-size: 1rem;
     letter-spacing: -0.02em;
     border-bottom: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .nav-link {
+    font-size: 0.9rem;
+    border-bottom: none;
+    color: var(--text-secondary);
+    transition: color 0.2s;
+  }
+
+  .nav-link:hover,
+  .nav-link.active {
+    color: var(--text);
+  }
+
+  .nav-link.active {
+    font-weight: 600;
   }
 
   main {
