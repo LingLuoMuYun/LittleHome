@@ -45,6 +45,16 @@ html {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* 字体加载期间保持文本可见 */
+body {
+  font-display: swap;
+}
+
+/* 图片和 iframe 默认懒加载 */
+img[loading] {
+  content-visibility: auto;
+}
+
 body {
   font-family: var(--font-sans);
   background: var(--bg);
