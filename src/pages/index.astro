@@ -51,16 +51,25 @@ const quickLinks = [
       />
     </div>
     <div class="home-music">
-      <a href="/music" class="music-home-card card">
-        <div class="mhc-visual">
-          <div class="mhc-disc"></div>
-        </div>
-        <div class="mhc-info">
-          <span class="mhc-badge">CLOUD MUSIC</span>
-          <span class="mhc-title">音乐盒子</span>
-          <span class="mhc-sub">网易云音乐精选</span>
-        </div>
-      </a>
+      <div class="music-home-card card">
+        <a href="/music" class="mhc-link">
+          <div class="mhc-visual">
+            <div class="mhc-disc"></div>
+          </div>
+          <div class="mhc-info">
+            <span class="mhc-badge">CLOUD MUSIC</span>
+            <span class="mhc-title">音乐盒子</span>
+            <span class="mhc-sub">网易云音乐精选</span>
+          </div>
+        </a>
+        <iframe
+          class="mhc-player"
+          src="https://music.163.com/outchain/player?type=0&amp;id=18055656543&amp;height=200&amp;auto=0"
+          width="100%"
+          height="200"
+          frameborder="no"
+        ></iframe>
+      </div>
     </div>
   </div>
 
@@ -157,12 +166,21 @@ const quickLinks = [
   .music-home-card {
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 2rem;
     text-align: center;
     min-height: 100%;
+  }
+
+  .mhc-link {
+    padding: 1.5rem 1rem 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 1rem;
+  }
+
+  .mhc-player {
+    border-radius: 0 0 var(--radius) var(--radius);
   }
 
   .mhc-visual {
