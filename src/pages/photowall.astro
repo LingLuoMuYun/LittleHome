@@ -53,17 +53,41 @@ import { photos } from '../data/photos';
   const lbImg = document.getElementById('lightbox-img') as HTMLImageElement;
   const lbCaption = document.getElementById('lightbox-caption')!;
   let currentIdx = -1;
+  let isLoading = false;
 
   function open(idx: number): void {
+    if (isLoading || lb.classList.contains('opening')) return;
     currentIdx = idx;
     const el = items[idx];
     const img = el.querySelector('img')!;
-    lbImg.src = img.dataset.full || img.src;
-    lbCaption.textContent = img.dataset.caption || '';
-    lb.classList.remove('hidden');
+    isLoading = true;
+    lb.classList.add('opening');
+
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      lbImg.src = tempImg.src;
+      lbCaption.textContent = img.dataset.caption || '';
+      lb.classList.remove('hidden', 'opening');
+      isLoading = false;
+    };
+    tempImg.onerror = () => {
+      lbImg.src = img.src;
+      lbCaption.textContent = img.dataset.caption || '';
+      lb.classList.remove('hidden', 'opening');
+      isLoading = false;
+    };
+    tempImg.src = img.dataset.full || img.src;
   }
 
-  function close(): void { lb.classList.add('hidden'); currentIdx = -1; }
+  function close(): void {
+    lb.classList.add('closing');
+    setTimeout(() => {
+      lb.classList.add('hidden');
+      lb.classList.remove('closing');
+      lbImg.src = '';
+      currentIdx = -1;
+    }, 200);
+  }
 
   function prev(): void {
     if (currentIdx > 0) open(currentIdx - 1);
@@ -73,7 +97,9 @@ import { photos } from '../data/photos';
     if (currentIdx < items.length - 1) open(currentIdx + 1);
   }
 
-  items.forEach((el, i) => el.addEventListener('click', () => open(i)));
+  items.forEach((el, i) => {
+    el.addEventListener('click', () => open(i));
+  });
   document.querySelector('.lightbox-close')!.addEventListener('click', close);
   document.querySelector('.lightbox-prev')!.addEventListener('click', prev);
   document.querySelector('.lightbox-next')!.addEventListener('click', next);
@@ -83,6 +109,20 @@ import { photos } from '../data/photos';
     if (e.key === 'Escape') close();
     if (e.key === 'ArrowLeft') prev();
     if (e.key === 'ArrowRight') next();
+  });
+  lbImg.addEventListener('click', (e) => e.stopPropagation());
+
+  let touchStartX = 0;
+  lb.addEventListener('touchstart', (e) => {
+    touchStartX = e.touches[0].clientX;
+  });
+  lb.addEventListener('touchend', (e) => {
+    if (lb.classList.contains('hidden')) return;
+    const touchEndX = e.changedTouches[0].clientX;
+    const diff = touchStartX - touchEndX;
+    if (Math.abs(diff) > 50) {
+      diff > 0 ? next() : prev();
+    }
   });
 </script>
 
@@ -173,7 +213,16 @@ import { photos } from '../data/photos';
     max-height: 85vh;
     object-fit: contain;
     border-radius: 4px;
+    animation: fadeIn 0.3s ease;
   }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .lightbox.opening { opacity: 0.5; }
+  .lightbox.closing { opacity: 0; transition: opacity 0.2s; }
 
   .lightbox-close {
     position: absolute;

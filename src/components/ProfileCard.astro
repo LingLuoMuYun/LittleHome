@@ -24,7 +24,6 @@ const hasAvatar = !!site.avatarUrl;
   <!-- 姓名 + 简介 -->
   <h1 class="profile-name">{site.title}</h1>
   <p class="profile-bio">{site.bio}</p>
-  <p class="profile-subtitle">{site.subtitle}</p>
 
   <!-- 数据统计 -->
   <div class="stats-row">
@@ -145,15 +144,8 @@ const hasAvatar = !!site.avatarUrl;
   .profile-bio {
     font-size: 0.9rem;
     color: var(--text-secondary);
-    margin-bottom: 0.15rem;
-    line-height: 1.5;
-  }
-
-  .profile-subtitle {
-    font-size: 0.82rem;
-    color: var(--text-secondary);
-    opacity: 0.7;
     margin-bottom: 1.5rem;
+    line-height: 1.5;
   }
 
   .stats-row {

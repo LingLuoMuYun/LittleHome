@@ -2,9 +2,9 @@
 
 export const site = {
   title: 'LingLuo',
-  subtitle: '',
+  subtitle: '开发者 · 极简主义者',
   bio: '街喧闹，人过往，且记曾相识，不为少年留。',
-  avatarUrl: '/avatar.jpg',
+  avatarUrl: '/images/avatar.jpg',
   buildDate: '2026-06-13',
 };
 

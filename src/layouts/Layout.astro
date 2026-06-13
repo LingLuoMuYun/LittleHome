@@ -4,6 +4,7 @@ import BackgroundGradient from '../components/BackgroundGradient.astro';
 import SearchModal from '../components/SearchModal.astro';
 import FloatingPlayer from '../components/FloatingPlayer.astro';
 import { getCollection } from 'astro:content';
+import { site, social } from '../data/site';
 
 const currentPath = Astro.url.pathname;
 
@@ -95,7 +96,7 @@ const navItems = [
         <div class="footer-grid">
           <div class="footer-col">
             <span class="footer-logo">LL</span>
-            <p>开发者 · 极简主义者</p>
+            <p>{site.subtitle}</p>
           </div>
           <div class="footer-col">
             <h4>导航</h4>
@@ -108,9 +109,8 @@ const navItems = [
           <div class="footer-col">
             <h4>链接</h4>
             <div class="footer-nav">
-              <a href="https://github.com/LingLuoMuYun" target="_blank" rel="noopener">GitHub</a>
-              <a href="https://github.com/LingLuoMuYun" target="_blank" rel="noopener">GitHub</a>
-              <a href="mailto:lingluo@example.com">Email</a>
+              <a href={social.github} target="_blank" rel="noopener">GitHub</a>
+              <a href={social.email}>Email</a>
             </div>
           </div>
         </div>
