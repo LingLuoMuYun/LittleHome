@@ -2,7 +2,7 @@
 import '../styles/global.css';
 import BackgroundGradient from '../components/BackgroundGradient.astro';
 import SearchModal from '../components/SearchModal.astro';
-import FloatingPlayer from '../components/FloatingPlayer.astro';
+import CloudMusicPlayer from '../components/CloudMusicPlayer.astro';
 import { getCollection } from 'astro:content';
 
 const currentPath = Astro.url.pathname;
@@ -91,7 +91,7 @@ const navItems = [
     </main>
 
     <SearchModal />
-    <FloatingPlayer />
+    <CloudMusicPlayer />
 
     <script type="application/json" id="search-index">
       {JSON.stringify(searchIndex)}

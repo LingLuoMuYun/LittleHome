@@ -1,5 +1,6 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import CloudMusicPlayer from '../components/CloudMusicPlayer.astro';
 ---
 
 <Layout>
@@ -8,29 +9,34 @@ import Layout from '../layouts/Layout.astro';
     <p class="subtitle">用音乐为生活伴奏。</p>
   </section>
 
-  <div class="card card-body">
-    <div class="music-grid">
-      {[
-        { id: '18055656543', name: '我的歌单', desc: '私人收藏' },
-        { id: '298330', name: '纯音乐精选', desc: '钢琴与弦乐的温柔对话' },
-        { id: '72857096', name: '轻音乐', desc: '阅读与专注的背景音' },
-        { id: '2829883282', name: '治愈系', desc: '温暖治愈的旋律' },
-      ].map((pl) => (
-        <div class="music-card">
-          <iframe
-            src={`https://music.163.com/outchain/player?type=0&amp;id=${pl.id}&amp;height=200&amp;auto=0`}
-            width="100%"
-            height="240"
-            frameborder="no"
-            loading="lazy"
-            style="border-radius: var(--radius-sm);"
-          ></iframe>
-          <div class="music-info">
-            <h3>{pl.name}</h3>
-            <p>{pl.desc}</p>
-          </div>
-        </div>
-      ))}
+  <div class="music-layout">
+    <div class="music-player-section">
+      <CloudMusicPlayer />
+    </div>
+
+    <div class="music-playlists card">
+      <h3>歌单推荐</h3>
+      <div class="playlist-list">
+        {[
+          { id: '18055656543', name: '我的歌单', desc: '私人收藏' },
+          { id: '298330', name: '纯音乐精选', desc: '钢琴与弦乐的温柔对话' },
+          { id: '72857096', name: '轻音乐', desc: '阅读与专注的背景音' },
+          { id: '2829883282', name: '治愈系', desc: '温暖治愈的旋律' },
+        ].map((pl) => (
+          <a
+            href={`https://music.163.com/#/playlist?id=${pl.id}`}
+            target="_blank"
+            rel="noopener"
+            class="playlist-item"
+          >
+            <div class="playlist-info">
+              <span class="playlist-name">{pl.name}</span>
+              <span class="playlist-desc">{pl.desc}</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          </a>
+        ))}
+      </div>
     </div>
   </div>
 </Layout>
@@ -39,32 +45,77 @@ import Layout from '../layouts/Layout.astro';
   .page-header { margin-bottom: 2rem; }
   .page-header h1 { margin-bottom: 0.25rem; }
   .subtitle { color: var(--text-secondary); font-size: 0.95rem; }
-  .card-body { padding: 1.5rem; }
 
-  .music-grid {
+  .music-layout {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: 1fr 280px;
+    gap: 1.5rem;
   }
 
-  .music-card {
+  .music-player-section {
+    min-height: 320px;
+  }
+
+  .music-playlists {
+    padding: 1.25rem;
+    height: fit-content;
+  }
+
+  .music-playlists h3 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .playlist-list {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
   }
 
-  .music-info h3 {
-    font-size: 0.95rem;
-    margin-bottom: 0.2rem;
+  .playlist-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.6rem 0.75rem;
+    border-radius: var(--radius-sm);
+    background: transparent;
+    transition: background 0.2s, color 0.2s;
   }
 
-  .music-info p {
-    font-size: 0.82rem;
+  .playlist-item:hover {
+    background: var(--accent-light);
+    color: var(--accent);
+  }
+
+  .playlist-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+  }
+
+  .playlist-name {
+    font-size: 0.88rem;
+    font-weight: 600;
+  }
+
+  .playlist-desc {
+    font-size: 0.72rem;
     color: var(--text-secondary);
-    margin-bottom: 0;
   }
 
-  @media (max-width: 480px) {
-    .music-grid { grid-template-columns: 1fr; }
+  .playlist-item:hover .playlist-desc {
+    color: var(--accent);
+    opacity: 0.8;
+  }
+
+  @media (max-width: 768px) {
+    .music-layout {
+      grid-template-columns: 1fr;
+    }
+    .music-playlists {
+      order: -1;
+    }
   }
 </style>

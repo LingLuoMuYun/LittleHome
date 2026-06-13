@@ -5,6 +5,8 @@ import rehypeKatex from 'rehype-katex';
 import rehypePrettyCode from 'rehype-pretty-code';
 import sitemap from '@astrojs/sitemap';
 
+import react from '@astrojs/react';
+
 export default defineConfig({
   site: 'https://lingluo.dev',
   output: 'static',
@@ -20,5 +22,5 @@ export default defineConfig({
       ],
     ],
   },
-  integrations: [sitemap()],
+  integrations: [sitemap(), react()],
 });
